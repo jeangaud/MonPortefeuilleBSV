@@ -1,0 +1,5 @@
+# BSV Wallet v4.0 - Dépendances Python
+bip-utils>=2.9.0
+base58>=2.1.1
+ecdsa>=0.18.0
+configparser>=5.3.0
