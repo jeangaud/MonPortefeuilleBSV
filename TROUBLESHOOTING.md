@@ -1,24 +1,35 @@
 # Guide de dépannage - MonPortefeuilleBSV
 
-## Problème de certificat SSL avec ElectrumX
+## ✅ Problème de certificat SSL - RÉSOLU
 
-### Symptôme
+### Symptôme d'origine
 ```
 ERREUR RPC: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: self-signed certificate
 ```
 
-### Cause
-Le serveur ElectrumX `electrumx.gorillapool.io` utilise un certificat auto-signé qui n'est pas reconnu par Python par défaut.
+### Cause identifiée
+Le serveur ElectrumX `electrumx.gorillapool.io` utilise un certificat auto-signé. De plus, le paramètre `verify_ssl` dans `config.ini` n'était pas pris en compte à cause d'un bug dans le code.
 
-### Solution appliquée ✅
+### ✅ Corrections appliquées (Version actuelle)
 
-La section `[Network]` a été ajoutée au fichier `config.ini` avec l'option `verify_ssl = false` :
-
+**1. Ajout de la configuration réseau dans config.ini**
 ```ini
 [Network]
 electrumx_server = electrumx.gorillapool.io
 electrumx_port = 50002
 verify_ssl = false
+```
+
+**2. Correction du bug dans main.py**
+Le module `WalletNetwork` était créé AVANT la lecture de la configuration. Le code a été corrigé pour :
+- Lire la configuration réseau depuis `config.ini`
+- Créer `WalletNetwork` avec les bons paramètres
+- Afficher la configuration au démarrage : `🔒 Vérification SSL: désactivée`
+
+**Confirmation au démarrage** : Vous devriez voir ces lignes :
+```
+🌐 Serveur ElectrumX: electrumx.gorillapool.io:50002
+🔒 Vérification SSL: désactivée
 ```
 
 **⚠️ Note de sécurité** : Désactiver la vérification SSL rend la connexion moins sécurisée. En production, préférez :
