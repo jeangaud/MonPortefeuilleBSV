@@ -63,13 +63,27 @@ class BSVWalletManager:
     def initialize(self):
         """Initialise le portefeuille complet avec support Paymail."""
         print("🚀 --- BSV Wallet v4.0 - Multi-Address avec Menu, SPV et Paymail ---")
-        
+
         if not self.config.read_config():
             print("❌ Impossible de lire la configuration.")
             if self.config.create_default_config():
                 print("📝 Fichier config.ini créé. Configurez-le et relancez le programme.")
             return False
-        
+
+        # Charger la configuration réseau et recréer WalletNetwork avec les bons paramètres
+        network_config = self.config.get_network_config()
+        self.network = WalletNetwork(
+            server=network_config['electrumx_server'],
+            port=network_config['electrumx_port'],
+            verify_ssl=network_config['verify_ssl']
+        )
+        # Mettre à jour les dépendances qui utilisent network
+        self.spv_monitor = SPVMonitor(self.network)
+        self.scanner = WalletScanner(self.crypto, self.network)
+
+        print(f"🌐 Serveur ElectrumX: {network_config['electrumx_server']}:{network_config['electrumx_port']}")
+        print(f"🔒 Vérification SSL: {'activée' if network_config['verify_ssl'] else 'désactivée'}")
+
         wallet_config = self.config.get_wallet_config()
         self.crypto.set_derivation_path(wallet_config['derivation_path'])
         self.scanner.scan_depth = wallet_config['scan_depth']
