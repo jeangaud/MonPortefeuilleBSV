@@ -86,12 +86,10 @@ def setup_virtual_environment():
         subprocess.run([sys.executable, "-m", "venv", "venv"], check=True)
         print("✅ Environnement virtuel créé")
 
-        # Linux seulement
-        pip_cmd = "venv/bin/pip"
-
-        # Installer les dépendances
+        # Installer les dépendances en utilisant le Python du venv
         print("📦 Installation des dépendances...")
-        subprocess.run([pip_cmd, "install", "-r", "requirements.txt"], check=True)
+        pip_path = os.path.join("venv", "bin", "python")
+        subprocess.run([pip_path, "-m", "pip", "install", "-r", "requirements.txt"], check=True)
         print("✅ Dépendances installées")
 
         print(f"\n💡 Pour activer l'environnement virtuel:")
