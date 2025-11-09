@@ -1,69 +1,228 @@
 # BSV Wallet v4.0 - Modulaire
 
-## Installation Terminée ✅
+Un portefeuille Bitcoin SV (BSV) sécurisé, modulaire et complet avec support HandCash Paymail.
 
-Votre portefeuille BSV modulaire est maintenant installé !
+## 📋 Table des matières
 
-## Structure du Projet
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Démarrage Rapide](#démarrage-rapide)
+- [Fonctionnalités](#fonctionnalités)
+- [Sécurité](#sécurité)
+- [Architecture](#structure-du-projet)
+- [Variables d'environnement](#variables-denvironnement)
 
+## 🔧 Installation
+
+### Prérequis
+
+- **Python 3.8+** installé
+- **pip** (gestionnaire de paquets Python)
+- **Git** (pour cloner le repository)
+
+### Étapes d'installation
+
+#### 1. Cloner le repository
+
+```bash
+git clone https://github.com/jeangaud/MonPortefeuilleBSV.git
+cd MonPortefeuilleBSV
 ```
-BSV_Wallet_v4/
-├── main.py                    # Point d'entrée principal
-├── config.ini                 # Configuration (⚠️ À CONFIGURER)
-├── requirements.txt           # Dépendances Python
-├── modules/                   # Modules Python
-│   ├── wallet_config.py       # Gestion configuration
-│   ├── wallet_crypto.py       # Cryptographie
-│   ├── wallet_network.py      # Communication réseau
-│   ├── wallet_transaction.py  # Transactions
-│   ├── wallet_scanner.py      # Scanner d'adresses
-│   └── wallet_ui.py           # Interface utilisateur
-├── venv/                      # Environnement virtuel Python
-├── transactions/              # Transactions sauvegardées
-└── logs/                      # Logs du programme
+
+#### 2. Créer un environnement virtuel Python
+
+```bash
+# Linux/Mac
+python3 -m venv venv
+source venv/bin/activate
+
+# Windows
+python -m venv venv
+venv\Scripts\activate
+```
+
+#### 3. Installer les dépendances
+
+```bash
+pip install -r requirements.txt
+```
+
+#### 4. Préparer la configuration
+
+```bash
+# Copier le fichier exemple en configuration réelle
+cp config.ini.example config.ini
+```
+
+**Important**: Le fichier `config.ini` ne sera jamais commité sur Git pour éviter les fuites de secrets.
+
+#### 5. Éditer la configuration
+
+Éditez `config.ini` et complétez les champs requis :
+
+```ini
+[Credentials]
+# Votre mnémonique BIP39 (12 mots) - GARDEZ CECI SECRET!
+mnemonic = word1 word2 word3 ... word12
+
+# Passcode optionnel (laisser vide si aucun)
+passcode =
+
+[Transaction]
+# Votre adresse Paymail pour recevoir les paiements
+destination_address = username@handcash.io
+
+# Montant à envoyer en BSV
+amount_to_send_bsv = 0.01
+
+# Frais réseau (1-2 satoshis/byte recommandé)
+fee_per_byte = 1
+
+[Network]
+# Serveur ElectrumX pour la connexion réseau
+electrumx_server = electrumx.gorillapool.io
+electrumx_port = 50002
+
+# Vérification SSL (recommandé: true)
+verify_ssl = true
 ```
 
 ## 🚀 Démarrage Rapide
 
-### 1. Configurer votre mnémonique
-Éditez `config.ini` et remplacez :
-```ini
-mnemonic = your twelve word mnemonic phrase goes here exactly as given
-```
-Par votre vraie mnémonique de 12 mots.
+Une fois configuré, lancez simplement :
 
-### 2. Activer l'environnement virtuel
 ```bash
-# Linux/Mac
-source venv/bin/activate
+# Assurez-vous que l'environnement virtuel est activé
+source venv/bin/activate  # ou venv\Scripts\activate sur Windows
 
-# Windows
-venv\Scripts\activate
-```
-
-### 3. Lancer le portefeuille
-```bash
+# Lancer le portefeuille
 python main.py
 ```
 
+Le portefeuille affichera un menu interactif pour :
+- Afficher votre solde
+- Envoyer des transactions
+- Surveiller les transactions (mode SPV)
+- Voir l'historique
+
 ## 🔧 Fonctionnalités
 
-- ✅ **Portefeuille multi-adresses** - Combine automatiquement les UTXOs
-- ✅ **Mode SPV** - Surveillance temps réel des transactions
-- ✅ **Interface interactive** - Menu facile à utiliser
+- ✅ **Portefeuille multi-adresses** - Gestion automatique des UTXOs
+- ✅ **Mode SPV** - Surveillance temps réel avec notifications
+- ✅ **Support Paymail** - Intégration HandCash complète
+- ✅ **Interface interactive** - Menu user-friendly
 - ✅ **Architecture modulaire** - Code organisé et maintenable
 - ✅ **Signatures BSV** - Support complet Bitcoin SV
 
-## ⚠️ Sécurité
+## 🔐 Sécurité
 
-- **Gardez votre mnémonique secrète**
-- **Sauvegardez votre config.ini** (sans la mnémonique en ligne)
-- **Testez avec de petits montants** d'abord
-- **Utilisez un système sécurisé**
+### Bonnes pratiques
+
+1. **Protégez votre mnémonique**
+   - Ne la partagez jamais
+   - Ne la mettez pas dans des messages
+   - Gardez-la offline si possible
+
+2. **Variables d'environnement**
+   - Utilisez des variables d'environnement pour les secrets sensibles
+   - Ne commitez jamais `config.ini` avec des vraies données
+
+3. **Testez d'abord**
+   - Testez avec de petits montants
+   - Vérifiez toutes les transactions avant de les envoyer
+
+4. **Sauvegarde de secours**
+   - Sauvegardez votre mnémonique dans un endroit sûr (offline)
+   - Testez votre sauvegarde régulièrement
+
+### Sécurité SSL/TLS
+
+Par défaut, le portefeuille vérifie les certificats SSL/TLS de tous les serveurs.
+
+```bash
+# Vérification SSL activée par défaut (recommandé)
+export VERIFY_SSL=true
+
+# Si vous devez désactiver (NOT RECOMMENDED)
+export VERIFY_SSL=false
+```
+
+## 📦 Variables d'environnement
+
+Pour une configuration flexible et sécurisée, utilisez des variables d'environnement :
+
+```bash
+# Serveur ElectrumX
+export ELECTRUMX_SERVER=electrumx.gorillapool.io
+export ELECTRUMX_PORT=50002
+
+# Vérification SSL
+export VERIFY_SSL=true
+
+# Données sensibles (alternative à config.ini)
+export MNEMONIC="your twelve word mnemonic phrase"
+export PASSCODE=""
+```
+
+## 📁 Structure du Projet
+
+```
+MonPortefeuilleBSV/
+├── main.py                      # Point d'entrée principal
+├── config.ini                   # Configuration (⚠️ ignoré par Git)
+├── config.ini.example           # Modèle de configuration
+├── requirements.txt             # Dépendances Python
+├── .gitignore                   # Fichiers ignorés par Git
+├── README.md                    # Ce fichier
+├── modules/                     # Modules Python
+│   ├── wallet_config.py         # Gestion de configuration
+│   ├── wallet_crypto.py         # Cryptographie et signatures
+│   ├── wallet_network.py        # Communication ElectrumX
+│   ├── wallet_transaction.py    # Construction de transactions
+│   ├── wallet_paymail.py        # Résolution Paymail/HandCash
+│   ├── wallet_scanner.py        # Scanner d'adresses BIP44
+│   ├── wallet_ui.py             # Interface utilisateur
+│   └── ui/                      # Composants UI
+├── transactions/                # Transactions sauvegardées
+├── logs/                        # Fichiers journaux
+└── venv/                        # Environnement virtuel (à créer)
+```
+
+## 🛠️ Dépannage
+
+### Erreur: "Module crypto not available"
+Assurez-vous que toutes les dépendances sont installées :
+```bash
+pip install -r requirements.txt
+```
+
+### Erreur: "Configuration not loaded"
+Vérifiez que `config.ini` existe et contient une mnémonique valide de 12 mots.
+
+### Erreur de connexion réseau
+Vérifiez que :
+- Votre connexion Internet fonctionne
+- Le serveur ElectrumX est accessible
+- Les pare-feu n'bloquent pas le port 50002
+
+## 📖 Ressources
+
+- [Bitcoin SV](https://bitcoinsv.io/)
+- [BIP39 - Mnémoniques](https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki)
+- [BIP44 - Dérivation](https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki)
+- [HandCash](https://handcash.io/)
+- [ElectrumX Server](https://github.com/kyuupichan/ElectrumX)
+
+## 📄 Licence
+
+Ce projet est fourni à titre éducatif et de développement.
 
 ## 📞 Support
 
-Consultez `STRUCTURE_PROJET.md` pour les détails techniques et l'évolution du code.
+Pour les issues techniques, consultez la documentation du projet ou les logs d'application.
 
 ---
+
+**⚠️ AVERTISSEMENT**: Ce portefeuille gère des fonds réels. Testez toujours avec des petits montants d'abord et sécurisez correctement votre mnémonique.
+
 BSV Wallet v4.0 - Architecture Modulaire 🚀
