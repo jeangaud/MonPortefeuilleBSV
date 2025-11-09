@@ -4,13 +4,16 @@ Un portefeuille Bitcoin SV (BSV) sécurisé, modulaire et complet avec support H
 
 ## 📋 Table des matières
 
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Démarrage Rapide](#démarrage-rapide)
-- [Fonctionnalités](#fonctionnalités)
-- [Sécurité](#sécurité)
-- [Architecture](#structure-du-projet)
-- [Variables d'environnement](#variables-denvironnement)
+- [Installation](#-installation)
+  - [Option 1: Installation Automatisée](#option-1-installation-automatisée-recommandée)
+  - [Option 2: Installation Manuelle](#option-2-installation-manuelle)
+- [Configuration](#-configuration)
+- [Démarrage Rapide](#-démarrage-rapide)
+- [Fonctionnalités](#-fonctionnalités)
+- [Sécurité](#-sécurité)
+- [Structure du Projet](#-structure-du-projet)
+- [Dépannage](#-dépannage)
+- [Ressources](#-ressources)
 
 ## 🔧 Installation
 
@@ -27,7 +30,33 @@ sudo apt-get update
 sudo apt-get install python3 python3-pip python3-venv git
 ```
 
-### Étapes d'installation
+### Option 1: Installation Automatisée (Recommandée)
+
+La façon la plus simple pour installer le portefeuille :
+
+```bash
+# 1. Cloner le repository
+git clone https://github.com/jeangaud/MonPortefeuilleBSV.git
+cd MonPortefeuilleBSV
+
+# 2. Lancer le script d'installation automatisé
+python3 install.py
+```
+
+Le script fera automatiquement:
+- ✅ Vérifier le système d'exploitation (Debian/Linux)
+- ✅ Créer la structure de dossiers
+- ✅ Créer requirements.txt avec les dépendances
+- ✅ Créer l'environnement virtuel Python
+- ✅ Installer les dépendances
+- ✅ Préparer config.ini à partir du template
+- ✅ Créer un script de lancement (launch_wallet.sh)
+
+Après l'installation, éditez `config.ini` avec votre mnémonique (voir section Configuration ci-dessous).
+
+### Option 2: Installation Manuelle
+
+Si vous préférez contrôler chaque étape :
 
 #### 1. Cloner le repository
 
@@ -60,6 +89,10 @@ cp config.ini.example config.ini
 
 #### 5. Éditer la configuration
 
+Voir la section **Configuration** ci-dessous pour compléter votre `config.ini`.
+
+## ⚙️ Configuration
+
 Éditez `config.ini` et complétez les champs requis :
 
 ```ini
@@ -89,23 +122,54 @@ electrumx_port = 50002
 verify_ssl = true
 ```
 
-## 🚀 Démarrage Rapide
+### Champs obligatoires
 
-Une fois configuré, lancez simplement :
+- **mnemonic** (Credentials) - Votre mnémonique BIP39 de 12 mots
+- **destination_address** (Transaction) - Adresse Paymail ou adresse Bitcoin pour recevoir
+- **electrumx_server** (Network) - Serveur ElectrumX pour la connexion
+
+### Variables d'environnement (optionnel)
+
+Au lieu d'éditer `config.ini`, vous pouvez utiliser des variables d'environnement pour plus de sécurité:
 
 ```bash
-# Assurez-vous que l'environnement virtuel est activé
+export MNEMONIC="word1 word2 ... word12"
+export PASSCODE=""
+export DESTINATION_ADDRESS="username@handcash.io"
+export ELECTRUMX_SERVER="electrumx.gorillapool.io"
+export ELECTRUMX_PORT="50002"
+export VERIFY_SSL="true"
+```
+
+## 🚀 Démarrage Rapide
+
+Une fois **configuration terminée**, lancez le portefeuille :
+
+### Méthode 1: Utiliser le script de lancement (Simple)
+
+```bash
+./launch_wallet.sh
+```
+
+Le script active automatiquement l'environnement virtuel et lance le portefeuille.
+
+### Méthode 2: Lancement manuel
+
+```bash
+# Activer l'environnement virtuel
 source venv/bin/activate
 
 # Lancer le portefeuille
 python main.py
 ```
 
-Le portefeuille affichera un menu interactif pour :
-- Afficher votre solde
-- Envoyer des transactions
-- Surveiller les transactions (mode SPV)
-- Voir l'historique
+### Menu interactif
+
+Une fois lancé, le portefeuille affichera un menu pour :
+- ✅ Afficher votre solde
+- ✅ Envoyer des transactions
+- ✅ Surveiller les transactions (mode SPV)
+- ✅ Voir l'historique des transactions
 
 ## 🔧 Fonctionnalités
 
