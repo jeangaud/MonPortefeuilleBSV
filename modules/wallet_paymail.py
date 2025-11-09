@@ -149,9 +149,20 @@ class PaymailClient:
                 method = 'POST'
                 amount_satoshis = int(amount_bsv * self.satoshis_per_bsv)
                 request_data = {"senderName": "BSV Wallet v4.0", "senderHandle": "anonymous@bsvwallet.com", "amount": amount_satoshis, "purpose": "Payment from BSV Wallet v4.0", "dt": int(datetime.now(timezone.utc).timestamp())}
-                signature = "SIMULATED_SIGNATURE"
-                if self.crypto: print("ℹ️ NOTE: La signature est simulée. Le module crypto n'est pas disponible.")
-                request_data["signature"] = signature
+
+                # Generate proper signature if crypto module is available
+                if self.crypto and hasattr(self.crypto, 'sign_message'):
+                    try:
+                        signature = self.crypto.sign_message(self.crypto.get_private_key_for_signing(), json.dumps(request_data))
+                        request_data["signature"] = signature
+                        print(f"✅ Signature cryptographique générée")
+                    except Exception as e:
+                        print(f"⚠️ Impossible de générer la signature: {e}")
+                        print(f"⚠️ La requête sera envoyée sans signature")
+                else:
+                    print(f"⚠️ Module crypto non disponible - signature non générée")
+                    print(f"⚠️ La requête sera envoyée sans signature")
+
                 print(f"💰 Résolution P2P avec montant: {amount_bsv:.8f} BSV")
                 print(f"📋 Corps de la requête: {request_data}")
             
@@ -183,12 +194,19 @@ class PaymailClient:
             if response: return {'success': True, 'capabilities': response.get('capabilities', {}), 'bsvalias_version': response.get('bsvalias', '1.0')}
         return {'success': False, 'error': f'Impossible de trouver les capacités pour {domain}.'}
 
-    def _make_request(self, url, method='GET', data=None):
+    def _make_request(self, url, method='GET', data=None, verify_ssl=True):
         try:
             headers = {'User-Agent': self.user_agent, 'Accept': 'application/json', 'Content-Type': 'application/json'}
             request_body = json.dumps(data).encode('utf-8') if method == 'POST' and data else None
             request = urllib.request.Request(url, data=request_body, headers=headers, method=method)
-            context = ssl.create_default_context(); context.check_hostname = False; context.verify_mode = ssl.CERT_NONE
+
+            context = ssl.create_default_context()
+            # Only disable SSL verification if explicitly requested (not recommended)
+            if not verify_ssl:
+                context.check_hostname = False
+                context.verify_mode = ssl.CERT_NONE
+            # else: use default secure settings (verify_mode = ssl.CERT_REQUIRED)
+
             with urllib.request.urlopen(request, timeout=15, context=context) as response:
                 if 200 <= response.status < 300: return json.loads(response.read().decode('utf-8'))
                 print(f"❌ Erreur HTTP {response.status}: {response.reason}")
@@ -238,12 +256,6 @@ class PaymailIntegration:
             return False
 
 if __name__ == "__main__":
-    class MockCrypto:
-        def sign_message(self, key, msg): return "MOCK_SIGNATURE_FROM_CRYPTO_MODULE"
-        def get_private_key_for_signing(self): return "MOCK_PRIVATE_KEY"
-    client = PaymailClient(MockCrypto())
-    print("🧪 Test résolution HandCash avec montant...")
-    result = client.resolve_address("jeangaud@handcash.io", 0.001)
-    print("\n--- RÉSULTAT FINAL ---")
-    print(result)
-    print("----------------------")
+    print("🔒 Module Paymail - Tests désactivés")
+    print("Pour tester: utilisez un script de test externe avec vos propres adresses Paymail")
+    print("IMPORTANT: Ne jamais commiter d'adresses Paymail réelles ou de secrets dans le code")

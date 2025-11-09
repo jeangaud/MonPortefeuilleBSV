@@ -100,19 +100,41 @@ class WalletConfig:
         """Retourne la configuration du portefeuille."""
         if not self.config:
             return {
-                'derivation_path': 'm/44\'/0\'/0\'',
+                'derivation_path': "m/44'/0'/0'",
                 'scan_depth': 20
             }
-            
+
         try:
             return {
-                'derivation_path': self.config.get('Wallet', 'derivation_path', fallback='m/44\'/0\'/0\''),
+                'derivation_path': self.config.get('Wallet', 'derivation_path', fallback="m/44'/0'/0'"),
                 'scan_depth': int(self.config.get('Wallet', 'scan_depth', fallback='20'))
             }
         except Exception:
             return {
-                'derivation_path': 'm/44\'/0\'/0\'',
+                'derivation_path': "m/44'/0'/0'",
                 'scan_depth': 20
+            }
+
+    def get_network_config(self):
+        """Retourne la configuration réseau avec support des variables d'environnement."""
+        if not self.config:
+            return {
+                'electrumx_server': os.getenv('ELECTRUMX_SERVER', 'electrumx.gorillapool.io'),
+                'electrumx_port': int(os.getenv('ELECTRUMX_PORT', '50002')),
+                'verify_ssl': os.getenv('VERIFY_SSL', 'true').lower() == 'true'
+            }
+
+        try:
+            return {
+                'electrumx_server': os.getenv('ELECTRUMX_SERVER') or self.config.get('Network', 'electrumx_server', fallback='electrumx.gorillapool.io'),
+                'electrumx_port': int(os.getenv('ELECTRUMX_PORT') or self.config.get('Network', 'electrumx_port', fallback='50002')),
+                'verify_ssl': os.getenv('VERIFY_SSL', self.config.get('Network', 'verify_ssl', fallback='true')).lower() == 'true'
+            }
+        except Exception:
+            return {
+                'electrumx_server': 'electrumx.gorillapool.io',
+                'electrumx_port': 50002,
+                'verify_ssl': True
             }
     
     def get_config_status(self):
@@ -141,16 +163,16 @@ class WalletConfig:
         
         # Vérifier la configuration du portefeuille
         if self.config.has_section('Wallet'):
-            derivation_path = self.config.get('Wallet', 'derivation_path', fallback='m/44\'/0\'/0\'')
+            derivation_path = self.config.get('Wallet', 'derivation_path', fallback="m/44'/0'/0'")
             scan_depth = self.config.get('Wallet', 'scan_depth', fallback='20')
-            
+
             status['wallet'] = {
                 'derivation_path': derivation_path,
                 'scan_depth': scan_depth
             }
         else:
             status['wallet'] = {
-                'derivation_path': 'm/44\'/0\'/0\'',
+                'derivation_path': "m/44'/0'/0'",
                 'scan_depth': '20'
             }
         
@@ -204,7 +226,7 @@ show_periodic_checks = true
 [Wallet]
 # Chemin de dérivation BIP32 configurable
 derivation_path = m/44'/0'/0'
-# Profondeur de scan configurable  
+# Profondeur de scan configurable
 scan_depth = 20
 """
         

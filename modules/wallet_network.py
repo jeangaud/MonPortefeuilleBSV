@@ -14,26 +14,20 @@ import socket
 import ssl
 import json
 import time
+import os
 from datetime import datetime
 from decimal import Decimal
 
 class WalletNetwork:
     """Gestionnaire de communication réseau pour le portefeuille BSV."""
-    
-    def __init__(self, server='electrumx.gorillapool.io', port=50002):
-        self.server = server
-        self.port = port
+
+    def __init__(self, server=None, port=None, verify_ssl=None):
+        # Allow configuration via environment variables for better security
+        # Priority: function argument > environment variable > default value
+        self.server = server or os.getenv('ELECTRUMX_SERVER', 'electrumx.gorillapool.io')
+        self.port = port or int(os.getenv('ELECTRUMX_PORT', '50002'))
+        self.verify_ssl = verify_ssl if verify_ssl is not None else os.getenv('VERIFY_SSL', 'true').lower() == 'true'
         self.satoshis_per_bsv = 100000000
-
-#    def __init__(self, server='electrum.api.sv', port=50002):
-#        self.server = server
-#        self.port = port
-#        self.satoshis_per_bsv = 100000000
-
-#    def __init__(self, server='sv.satoshi.io', port=50002):
-#        self.server = server
-#        self.port = port
-#        self.satoshis_per_bsv = 100000000
 
 
     def send_rpc_request(self, method, params):
@@ -41,9 +35,13 @@ class WalletNetwork:
         try:
             request = {"method": method, "params": params, "id": 1}
             context = ssl.create_default_context()
-            context.check_hostname = False
-            context.verify_mode = ssl.CERT_NONE
-            
+
+            # Only disable SSL verification if explicitly configured (not recommended)
+            if not self.verify_ssl:
+                context.check_hostname = False
+                context.verify_mode = ssl.CERT_NONE
+            # else: use default secure settings (verify_mode = ssl.CERT_REQUIRED)
+
             with socket.create_connection((self.server, self.port), timeout=10) as sock:
                 with context.wrap_socket(sock, server_hostname=self.server) as ssock:
                     ssock.sendall(json.dumps(request).encode() + b'\n')
@@ -53,13 +51,13 @@ class WalletNetwork:
                         response_data += part
                         if len(part) < 4096 and response_data.endswith(b'\n'):
                             break
-                    
+
                     response = json.loads(response_data.decode())
-                    
+
                     if 'error' in response and response['error']:
                         print(f"ERREUR SERVEUR: {response['error']}")
                         return None
-                        
+
                     return response.get("result")
         except Exception as e:
             print(f"ERREUR RPC: {e}")
