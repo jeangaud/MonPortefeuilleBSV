@@ -1,0 +1,47 @@
+[Credentials]
+;12 words mnemonic - KEEP THIS SECRET!
+;Never commit your real mnemonic to version control
+mnemonic =
+
+;BIP39 Passphrase (optional) - KEEP THIS SECRET!
+;Set to empty string if not using a passphrase
+passcode =
+
+[Transaction]
+;Destination Paymail address for transactions
+;Example: user@handcash.io or user@example.com
+destination_address = your_paymail_address@domain.com
+
+;Amount to send in BSV
+amount_to_send_bsv = 0.01
+
+;Fee per byte in satoshis
+fee_per_byte = 1
+
+[SPV]
+;Interval in seconds between SPV checks
+check_interval = 3
+
+;Show periodic check messages
+show_periodic_checks = true
+
+[Wallet]
+;BIP44 derivation path
+;Standard: m/44'/0/0' for BSV
+derivation_path = m/44'/0/0
+
+;Number of addresses to scan during wallet discovery
+scan_depth = 20
+
+[Network]
+;ElectrumX server address
+;Can be overridden with ELECTRUMX_SERVER environment variable
+electrumx_server = electrumx.gorillapool.io
+
+;ElectrumX server port
+;Can be overridden with ELECTRUMX_PORT environment variable
+electrumx_port = 50002
+
+;Enable SSL certificate verification (recommended: true)
+;Can be overridden with VERIFY_SSL environment variable
+verify_ssl = true
