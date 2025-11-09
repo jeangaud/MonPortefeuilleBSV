@@ -35,13 +35,15 @@ sudo apt-get install python3 python3-pip python3-venv git
 La façon la plus simple pour installer le portefeuille :
 
 ```bash
-# 1. Cloner le repository
+# 1. Cloner le repository (crée automatiquement le dossier MonPortefeuilleBSV)
 git clone https://github.com/jeangaud/MonPortefeuilleBSV.git
 cd MonPortefeuilleBSV
 
 # 2. Lancer le script d'installation automatisé
 python3 install.py
 ```
+
+**Note**: `git clone` crée automatiquement le dossier `MonPortefeuilleBSV`, aucun besoin de le créer avant.
 
 Le script fera automatiquement:
 - ✅ Vérifier le système d'exploitation (Debian/Linux)
