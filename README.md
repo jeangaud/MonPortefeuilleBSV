@@ -16,9 +16,16 @@ Un portefeuille Bitcoin SV (BSV) sécurisé, modulaire et complet avec support H
 
 ### Prérequis
 
+- **Debian/Linux** (testé sur Debian)
 - **Python 3.8+** installé
 - **pip** (gestionnaire de paquets Python)
 - **Git** (pour cloner le repository)
+
+Installation rapide des dépendances système :
+```bash
+sudo apt-get update
+sudo apt-get install python3 python3-pip python3-venv git
+```
 
 ### Étapes d'installation
 
@@ -32,13 +39,8 @@ cd MonPortefeuilleBSV
 #### 2. Créer un environnement virtuel Python
 
 ```bash
-# Linux/Mac
 python3 -m venv venv
 source venv/bin/activate
-
-# Windows
-python -m venv venv
-venv\Scripts\activate
 ```
 
 #### 3. Installer les dépendances
@@ -93,7 +95,7 @@ Une fois configuré, lancez simplement :
 
 ```bash
 # Assurez-vous que l'environnement virtuel est activé
-source venv/bin/activate  # ou venv\Scripts\activate sur Windows
+source venv/bin/activate
 
 # Lancer le portefeuille
 python main.py
